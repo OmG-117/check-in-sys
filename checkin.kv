@@ -1,0 +1,224 @@
+#: set field_height sp(40)
+
+<InfoPopup@Popup>:
+    msg: ''
+    title: ''
+    size_hint: [0.66, 0.33]
+    title_size: sp(20)
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            size_hint: [1, 0.75]
+            font_size: sp(20)
+            text: root.msg
+        Button:
+            size_hint: [1, 0.25]
+            font_size: sp(20)
+            text: 'Close'
+            on_release: root.dismiss()
+
+<ConfirmPopup@Popup>:
+    title: ''
+    msg: ''
+    form_widget: None
+    size_hint: [0.66, 0.33]
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            size_hint: [1, 0.75]
+            font_size: sp(25)
+            text: root.msg
+        BoxLayout:
+            orientation: 'horizontal'
+            Button:
+                size_hint: [0.5, 0.25]
+                font_size: sp(20)
+                text: 'Cancel'
+                on_release: root.dismiss()
+            Button:
+                size_hint: [0.5, 0.25]
+                font_size: sp(20)
+                text: 'Submit'
+                on_release:
+                    root.dismiss()
+                    root.form_widget.submit_form()
+                    app.root.current = 'home'
+
+<Field@BoxLayout>:
+    label: label
+    input: input
+    valid: False
+    required: True
+    label_size_ratio: 0.25
+    orientation: 'horizontal'
+    height: field_height
+    size_hint: [1, None]
+    text: ''
+    spacing: sp(10)
+    Label:
+        id: label
+        height: field_height
+        size_hint: [root.label_size_ratio, None]
+        font_size: sp(20)
+        text: root.text
+    TextInput:
+        id: input
+        height: field_height
+        size_hint: [1 - root.label_size_ratio, None]
+        font_size: sp(20)
+        text: ''
+        multiline: False
+        on_text_validate: root.validate()
+        on_focus: if not self.focus: root.validate()
+
+<DrawingPad@Widget>:
+    size_hint: [1, 1]
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+<Separator@Widget>
+    size_hint: [1, 1]
+
+<HomeScreen@Screen>:
+    clock: clock
+    BoxLayout:
+        orientation: 'vertical'
+        Separator:
+        Label:
+            id: welcome
+            height: sp(100)
+            size_hint: [1, None]
+            font_size: sp(40)
+            text: 'Welcome to Hotel _'
+        Label:
+            id: clock
+            height: sp(75)
+            size_hint: [1, None]
+            font_size: sp(30)
+        Button:
+            id: start
+            height: sp(75)
+            size_hint: [0.3, None]
+            pos_hint: {'x': 0.35}
+            font_size: sp(20)
+            text: 'Start check in'
+            on_release: app.root.current = 'form'
+        Separator:
+
+
+<Form@BoxLayout>:
+    orientation: 'vertical'
+    padding: [20, 20, 20, 20]
+    spacing: [10, 10]
+    Label:
+        height: field_height*1.5
+        size_hint: [1, None]
+        font_size: sp(30)
+        text: 'Hotel _ Check in'
+    Field:
+        type: 'alpha'
+        text: 'Full name:'
+    Field:
+        type: 'alpha'
+        text: 'Father\'s name:'
+    Field:
+        type: 'printable'
+        text: 'Address line 1:'
+    Field:
+        type: 'printable'
+        text: 'Address line 2:'
+        required: False
+    BoxLayout:
+        orientation: 'horizontal'
+        height: field_height
+        size_hint: [1, None]
+        Field:
+            label_size_ratio: 0.33
+            type: 'alpha'
+            text: 'City:'
+        Field:
+            label_size_ratio: 0.33
+            type: 'numeric'
+            text: 'Pincode:'
+    BoxLayout:
+        orientation: 'horizontal'
+        height: field_height
+        size_hint: [1, None]
+        Field:
+            label_size_ratio: 0.33
+            type: 'alpha'
+            text: 'State:'
+        Field:
+            label_size_ratio: 0.33
+            type: 'alpha'
+            text: 'Country:'
+    Field:
+        type: 'alpha'
+        text: 'Nationality:'
+    Field:
+        type: 'phnum'
+        text: 'Phone number:'
+    Field:
+        type: 'email'
+        text: 'Email ID:'
+    BoxLayout:
+        orientation: 'horizontal'
+        height: field_height
+        size_hint: [1, None]
+        Field:
+            label_size_ratio: 0.66
+            type: 'numeric'
+            text: 'No. of persons:'
+        Field:
+            label_size_ratio: 0.66
+            type: 'numeric'
+            text: 'Expected stay:'
+    Field:
+        type: 'printable'
+        text: 'Arriving from:'
+    Field:
+        type: 'printable'
+        text: 'Purpose of visit:'
+    BoxLayout:
+        orientation: 'horizontal'
+        height: sp(80)
+        size_hint: [1, None]
+        Label:
+            height: sp(80)
+            size_hint: [0.2, None]
+            font_size: sp(20)
+            text: 'Notes:'
+        TextInput:
+            height: sp(80)
+            size_hint: [0.8, None]
+            font_size: sp(20)
+            text: ''
+            multiline: True
+    Label:
+        height: field_height
+        size_hint: [1, None]
+        text_size: self.size
+        font_size: sp(20)
+        halign: 'left'
+        text: 'I confirm that the above details are accurate (your signature):'
+    DrawingPad:
+    BoxLayout:
+        height: field_height
+        size_hint: [1, None]
+        orientation: 'horizontal'
+        Button:
+            font_size: sp(20)
+            text: 'Cancel'
+            on_release: app.root.current = 'home'
+        Button:
+            font_size: sp(20)
+            text: 'Continue'
+            on_release: root.process_form()
+
+<FormScreen@Screen>:
+    on_pre_enter: self.load()
+    on_leave: self.unload()
